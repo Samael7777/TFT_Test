@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Исходные файлы\TFT">
+      <UniqueIdentifier>{fa3acc8e-2bd9-4274-8240-e5cff3aca130}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Fonts">
+      <UniqueIdentifier>{bcb33374-4d58-4498-b5e5-15807d3ae5f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\TFT">
+      <UniqueIdentifier>{9c0c6094-637d-4ea5-a01c-92a3b513d29a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\Fonts">
+      <UniqueIdentifier>{9edc8ee0-d29e-4743-b3f9-583bf9590a3c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TFT_Test.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="tft\display_wnd.cpp">
+      <Filter>Исходные файлы\TFT</Filter>
+    </ClCompile>
+    <ClCompile Include="tft\TFT_Lib.cpp">
+      <Filter>Исходные файлы\TFT</Filter>
+    </ClCompile>
+    <ClCompile Include="tft\win32_drv.cpp">
+      <Filter>Исходные файлы\TFT</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\arial_sevenseg_num_32x50.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_4x6.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_5x8.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_5x12.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_6x8.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_6x10.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_7x12.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_8x8.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_8x12.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_8x12_cyr.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_8x14.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_8x14_cyr.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_10x16.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_12x16.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_12x20.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_16x16_cyr.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_16x26.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_20x22_cyr.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_21x26.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_22x20_italic.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_22x36.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_24x40.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_32x53.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_34x53_cyr.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_arial_7x10.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_arial_8x13.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_arial_10x15.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_arial_11x18.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_arial_13x19.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_arial_14x22.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_arial_16x25.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_arial_18x27.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_consolas_12x22.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_courier_14x26.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_Inconsola_24x32.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_pArial_10.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_pArial_13.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_pArial_16.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_pArial_21.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_pComic_12.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_pComic_16.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_pComic_19.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_pCourierNew_16.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_pCourierNew_18.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_pTimes_12.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_pTimes_15.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_pTimes_18.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_Times_15x25_cyr.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\font_Times_16x25_cyr.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\pFont_15_cyr.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\sevenseg_num_32x50.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="Font\sevenseg_num_64x100.c">
+      <Filter>Исходные файлы\Fonts</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="tft\COLOR_RGB565.h">
+      <Filter>Файлы заголовков\TFT</Filter>
+    </ClInclude>
+    <ClInclude Include="tft\display_wnd.h">
+      <Filter>Файлы заголовков\TFT</Filter>
+    </ClInclude>
+    <ClInclude Include="tft\TFT_Lib.h">
+      <Filter>Файлы заголовков\TFT</Filter>
+    </ClInclude>
+    <ClInclude Include="tft\win32_drv.h">
+      <Filter>Файлы заголовков\TFT</Filter>
+    </ClInclude>
+    <ClInclude Include="Font\Font.h">
+      <Filter>Файлы заголовков\Fonts</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
