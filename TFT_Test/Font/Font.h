@@ -64,6 +64,10 @@ typedef struct _pFont32_t
 //--------------------------------------------------------------
 
 extern  TFT_FONT_t CONSOLAS_12x22;
+extern  TFT_FONT_t SEVENSEG_NUM_32X50;
+extern  TFT_FONT_t SEVENSEG_NUM_64X100;
+
+//extern  TFT_FONT_t ARIAL_SEVENSEG_NUM_32X50;
 //extern  TFT_FONT_t FONT_4X6;
 //extern  TFT_FONT_t FONT_5X8;
 //extern  TFT_FONT_t FONT_5X12;
@@ -87,9 +91,8 @@ extern  TFT_FONT_t CONSOLAS_12x22;
 //extern  TFT_FONT_t FONT_22X20_ITALIC;
 //extern  TFT_FONT_t FONT_21X26;
 //extern  TFT_FONT_t FONT_34X53_CYR;
-//extern  TFT_FONT_t ARIAL_SEVENSEG_NUM_32X50;
-//extern  TFT_FONT_t SEVENSEG_NUM_32X50;
-//extern  TFT_FONT_t SEVENSEG_NUM_64X100;
+
+
 //extern  TFT_FONT_t INCONSOLA_24X32;
 //extern  TFT_FONT_t TIMES_15X25_CYR;
 //extern  TFT_FONT_t TIMES_16X25_CYR;
@@ -103,18 +106,6 @@ extern  TFT_FONT_t CONSOLAS_12x22;
 //extern  TFT_FONT_t ARIAL_16X25;
 //extern  TFT_FONT_t ARIAL_18X27;
 
-//extern  pFont16 pFont_15_cyr;
-//extern  pFont16 pArial_10;
-//extern  pFont16 pArial_13;
-//extern  pFont16 pArial_16;
-//extern  pFont32 pArial_21;
-//extern  pFont16 pComic_12;
-//extern  pFont16 pComic_16;
-//extern  pFont32 pComic_19;
-//extern  pFont16 pTimes_12;
-//extern  pFont16 pTimes_15;
-//extern  pFont32 pTimes_18;
-//extern 		pFont16 pCourierNew_18;
 
 #ifdef __cplusplus
 }

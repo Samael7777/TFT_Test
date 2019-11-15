@@ -25,6 +25,12 @@
     <Filter Include="Файлы заголовков\Fonts">
       <UniqueIdentifier>{9edc8ee0-d29e-4743-b3f9-583bf9590a3c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\GUI">
+      <UniqueIdentifier>{b13ad558-66b5-45fb-9141-ecbc332d750b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\GUI">
+      <UniqueIdentifier>{e7fde86a-5774-486d-8238-045ca54941b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TFT_Test.cpp">
@@ -195,6 +201,9 @@
     <ClCompile Include="Font\sevenseg_num_64x100.c">
       <Filter>Исходные файлы\Fonts</Filter>
     </ClCompile>
+    <ClCompile Include="GUI\GUI.cpp">
+      <Filter>Исходные файлы\GUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="tft\COLOR_RGB565.h">
@@ -211,6 +220,9 @@
     </ClInclude>
     <ClInclude Include="Font\Font.h">
       <Filter>Файлы заголовков\Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\GUI.h">
+      <Filter>Файлы заголовков\GUI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
