@@ -13,10 +13,30 @@ const uint8_t hex_decode[] =
 const uint32_t digits[] =
 {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 
-//Options_t TFT_Opts;
+
 extern Options_t TFT_Opts;
 TFT_FONT_t tft_font;
+
 Cursor_t cur;
+Console_t console;
+
+void ConsoleSetArea(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye)
+{
+	uint16_t d_width, d_height;
+	d_width = TFT_GetWidth();
+	d_height = TFT_GetHeight();
+	console.x_start = (xs <= d_width) ? xs : (d_width - 1);
+	console.x_end = (xe <= d_width) ? xe : d_width;
+	console.y_start = (ys <= d_height) ? ys : (d_height - 1);
+	console.y_end = (ye <= d_height) ? ye : d_height;
+	cur.max_pos = (console.x_end - console.x_start) / (tft_font.char_width + char_h_space);
+	cur.max_lines = (console.y_end - console.y_start) / (tft_font.char_height + char_v_space); 
+}
+
+void ConsoleClean(uint16_t bc)
+{
+	FillRectangle(console.x_start, console.y_start, console.x_end, console.y_end, bc);
+}
 
 void TFT_Init()
 {
@@ -32,8 +52,8 @@ void TFT_Deinit()
 //---------------------------------------------------------------------------------------
 void SetCursor( uint16_t x, uint16_t y )
 {
-  cur.cur_x = x;
-  cur.cur_y = y;
+	cur.cur_x = ((x + console.x_start) < console.x_end) ? (x + console.x_start) : (console.x_end - 1);
+	cur.cur_y = ((y + console.y_start) < console.y_end) ? (y + console.y_start) : (console.y_end - 1);
 }
 //---------------------------------------------------------------------------------------
 uint16_t GetCursor_x(void)
@@ -979,39 +999,36 @@ void DrawLoadBMP(uint16_t x, uint16_t y, char *sname)
 	}
 }
 */
+
 //---------------------------------------------------------------------------------------
-//void ConsoleSetArea( uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye )
-//{
-//   SetWindow( xs, ys, xe, ye );
-//   TFT_FillWindow( xs, ys, xe, ye, C_BLACK );
-//   SetCursor( 0, 0 );
-//}
-//---------------------------------------------------------------------------------------
-void ConsolePutChar( char chr, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void ConsolePutChar( char chr, uint16_t fc, uint16_t bc )
 {
-  if ((cur.cur_x + font->char_width + char_h_space) > TFT_Opts.Width - 1)
-    {
-      cur.cur_x = 0;
-      cur.cur_y += font->char_height + char_v_space;
-    }
-  if ((cur.cur_y + font->char_height + char_v_space) > TFT_Opts.Height - 1)
-    {
-      cur.cur_x = 0;
-      cur.cur_y = 0;
-    }
-  PutChar( cur.cur_x, cur.cur_y, chr, font, fc, bc );
-  cur.cur_x += font->char_width + char_h_space;
+	int x,y;
+
+	if ((cur.cur_x) > cur.max_pos)
+	{
+		cur.cur_x = 0;
+		cur.cur_y += 1;
+	}
+
+	if ((cur.cur_y) > cur.max_lines)
+	{
+		cur.cur_x = 0;
+		cur.cur_y = 0;
+	}
+	x = console.x_start + cur.cur_x * (tft_font.char_width + char_h_space);
+	y = console.y_start + cur.cur_y * (tft_font.char_height+ char_v_space);
+	PutChar( x, y, chr, &tft_font, fc, bc );
+	cur.cur_x++;
 }
 //---------------------------------------------------------------------------------------
-void ConsolePutString( char* str, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void ConsolePutString( char* str, uint16_t fc, uint16_t bc )
 {
-  uint8_t cw;
   char chr;
 
   while ( *str != 0 )
    {
       chr = *str++;
-	    cw = font->widths ? font->widths[chr - font->start_char] : font->char_width;
 
 		if ( chr == '\r' )
         {
@@ -1021,78 +1038,77 @@ void ConsolePutString( char* str, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
 
 		if ( chr == '\n' )
         {
-          cur.cur_y += font->char_height + char_v_space;
+		  cur.cur_y += 1;
           continue;
         }
 
-      if ((cur.cur_x + cw + char_h_space) > TFT_Opts.Width - 1)
+      if ((cur.cur_x) > cur.max_pos)
         {
           cur.cur_x = 0;
-          cur.cur_y += font->char_height + char_v_space;
+          cur.cur_y += 1;
         }
 
-	  if ((cur.cur_y + font->char_height + char_v_space) > TFT_Opts.Height - 1)
+	  if ((cur.cur_y) > cur.max_lines)
         {
           cur.cur_x = 0;
           cur.cur_y = 0;
         }
 
-      PutChar(cur.cur_x, cur.cur_y, chr, font, fc, bc);
-      cur.cur_x += cw + char_h_space;
+      ConsolePutChar(chr, fc, bc);
    }
 }
 //---------------------------------------------------------------------------------------
-void PutString_Hex8( uint8_t data, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void PutString_Hex8( uint8_t data, uint16_t fc, uint16_t bc )
 {
-	ConsolePutChar((hex_decode[(data >> 4) & 0x0F]), font, fc, bc);
-	ConsolePutChar((hex_decode[data & 0x0F]), font, fc, bc);
+	ConsolePutChar((hex_decode[(data >> 4) & 0x0F]), fc, bc);
+	ConsolePutChar((hex_decode[data & 0x0F]), fc, bc);
 }
 //---------------------------------------------------------------------------------------
-void PutString_Hex16( uint16_t data, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void PutString_Hex16( uint16_t data, uint16_t fc, uint16_t bc )
 {
 	uint16_t i;
 
-	for (i = 12; i; i -= 4) ConsolePutChar((hex_decode[(data >> i) & 0x0F]), font, fc, bc);
-	ConsolePutChar((hex_decode[data & 0x0F]), font, fc, bc);
+	for (i = 12; i; i -= 4) ConsolePutChar((hex_decode[(data >> i) & 0x0F]), fc, bc);
+	ConsolePutChar((hex_decode[data & 0x0F]), fc, bc);
 }
 //---------------------------------------------------------------------------------------
-void PutString_Hex32( uint32_t data, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void PutString_Hex32( uint32_t data, uint16_t fc, uint16_t bc )
 {
 	uint32_t i;
 
-	for (i = 28; i; i -= 4) ConsolePutChar((hex_decode[(data >> i) & 0x0F]), font, fc, bc);
-	ConsolePutChar((hex_decode[data & 0x0F]), font, fc, bc);
+	for (i = 28; i; i -= 4) ConsolePutChar((hex_decode[(data >> i) & 0x0F]), fc, bc);
+	ConsolePutChar((hex_decode[data & 0x0F]), fc, bc);
 }
 //---------------------------------------------------------------------------------------
-void PutString_dec_xx( uint8_t data, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void PutString_dec_xx( uint8_t data, uint16_t fc, uint16_t bc )
 {
-	ConsolePutChar((hex_decode[((data % 100) / 10) & 0x0F]), font, fc, bc );
-	ConsolePutChar((hex_decode[((data % 100) % 10) & 0x0F]), font, fc, bc );
+	ConsolePutChar((hex_decode[((data % 100) / 10) & 0x0F]), fc, bc );
+	ConsolePutChar((hex_decode[((data % 100) % 10) & 0x0F]), fc, bc );
 }
 //---------------------------------------------------------------------------------------
-void PutString_dec_xxx( uint16_t data, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void PutString_dec_xxx( uint16_t data, uint16_t fc, uint16_t bc )
 {
-	ConsolePutChar((hex_decode[(data / 100) & 0x0F]), font, fc, bc);
-	ConsolePutChar((hex_decode[((data % 100) / 10) & 0x0F]), font, fc, bc);
-	ConsolePutChar((hex_decode[((data % 100) % 10) & 0x0F]), font, fc, bc);
+	ConsolePutChar((hex_decode[(data / 100) & 0x0F]), fc, bc);
+	ConsolePutChar((hex_decode[((data % 100) / 10) & 0x0F]), fc, bc);
+	ConsolePutChar((hex_decode[((data % 100) % 10) & 0x0F]), fc, bc);
 }
 //---------------------------------------------------------------------------------------
-void PutString_dec_xxxx( uint16_t data, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void PutString_dec_xxxx( uint16_t data, uint16_t fc, uint16_t bc )
 {
-	ConsolePutChar((hex_decode[(data / 1000) & 0x0F]), font, fc, bc);
-	ConsolePutChar((hex_decode[((data % 1000) / 100) & 0x0F]), font, fc, bc);
-	ConsolePutChar((hex_decode[((data % 1000) % 100) / 10 & 0x0F]), font, fc, bc);
-	ConsolePutChar((hex_decode[((data % 1000) % 100) % 10 & 0x0F]), font, fc, bc);
+	ConsolePutChar((hex_decode[(data / 1000) & 0x0F]), fc, bc);
+	ConsolePutChar((hex_decode[((data % 1000) / 100) & 0x0F]), fc, bc);
+	ConsolePutChar((hex_decode[((data % 1000) % 100) / 10 & 0x0F]), fc, bc);
+	ConsolePutChar((hex_decode[((data % 1000) % 100) % 10 & 0x0F]), fc, bc);
 }
 //---------------------------------------------------------------------------------------
-void PutString_Intflag(int32_t a, uint8_t flag, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void PutString_Intflag(int32_t a, uint8_t flag, uint16_t fc, uint16_t bc )
 {
 	uint32_t b;
 	int8_t i;
 
 	if (a < 0)
 	{
-		ConsolePutChar(('-'), font, fc, bc);
+		ConsolePutChar(('-'), fc, bc);
 		a = -a;
 	}
 	for (i = 9; i >= 0; i--)
@@ -1100,29 +1116,29 @@ void PutString_Intflag(int32_t a, uint8_t flag, TFT_FONT_t *font, uint16_t fc, u
 		b = a / digits[i];
 		if ((flag>i) || ( b))
 		{
-			ConsolePutChar(('0' + b), font, fc, bc);
+			ConsolePutChar(('0' + b), fc, bc);
 			flag = i;
 		}
 		a = a % digits[i];
 	}
 }
 //---------------------------------------------------------------------------------------
-void PutString_Int( int32_t a, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void PutString_Int( int32_t a, uint16_t fc, uint16_t bc )
 {
-	PutString_Intflag(a, 1, font, fc, bc);
+	PutString_Intflag(a, 1, fc, bc);
 }
 //---------------------------------------------------------------------------------------
-void PutString_Float( float a, uint8_t digit_after_point, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void PutString_Float( float a, uint8_t digit_after_point, uint16_t fc, uint16_t bc )
 {
   float b;
 
 	b = a + (0.5001 / digits[digit_after_point]);
-	PutString_Intflag(b, 1, font, fc, bc);
+	PutString_Intflag(b, 1, fc, bc);
 	if (b < 0)
 		b = -b;
-	ConsolePutChar(('.'), font, fc, bc);
+	ConsolePutChar(('.'), fc, bc);
 	b = (b - ((uint32_t)b)) * (digits[digit_after_point]);
-	PutString_Intflag(b, digit_after_point, font, fc, bc);
+	PutString_Intflag(b, digit_after_point, fc, bc);
 }
 //---------------------------------------------------------------------------------------
 /*
