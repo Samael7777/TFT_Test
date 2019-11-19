@@ -21,23 +21,42 @@ constexpr auto HEADER_HEIGHT =	30;		//Высота хедера в пикселях;
 //Описание пункта меню
 typedef struct MenuItem
 {
-	char*		Text;		//Название пункта меню
-	uint16_t	id = 0;		//Id пункта меню
-	void* child = NULL;		//Ссылка на меню-потомка
-	void*	prev = NULL;	//Ссылка на предыдущий пункт меню
-	void*	next = NULL;	//Ссылка на следующий пункт меню
-	void* Exec = NULL;		//Ссылка на действие
+	char*	Text;				//Название пункта меню
+	void*	child = NULL;		//Ссылка на меню-потомка
+	void*	prev = NULL;		//Ссылка на предыдущий пункт меню
+	void*	next = NULL;		//Ссылка на следующий пункт меню
+	void*	Exec = NULL;		//Ссылка на действие
 } MenuItem_t;
 
 //Описание заголовка меню
 typedef struct Menu
 {
-	char*	title;				//Название меню
-	void*	parent = NULL;		//Ссылка на меню-предка
-	void*	item;					//Ссылка на первый пункт меню
+	char*		title;				//Название меню
+	void*		parent = NULL;		//Ссылка на меню-предка
+	MenuItem_t*	item;				//Ссылка на первый пункт меню
 } Menu_t;
 
+//Описание команд меню
+typedef enum Command
+{
+	MNU_UP,
+	MNU_DOWN,
+	MNU_SEL
+} Command_t;
+
+//Структура статуса хедера
+typedef struct
+{
+	boolean fan;
+	boolean z1;
+	boolean z2;
+	boolean z3;
+} HeaderData_t;
+
 //Прототипы функций
-void GuiInit(void);
+void GuiInit(void);						//Инициализация
+void NavigateMenu(Command_t com);		//Навигация по меню
+void UpdateTime(void);					//Обновить время
+void SetHeaderData(HeaderData_t* hd);	//Установить статус хедера
 
 #endif

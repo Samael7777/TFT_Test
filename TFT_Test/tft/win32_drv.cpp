@@ -27,7 +27,7 @@ void DrawPixel(uint16_t x, uint16_t y, uint16_t color)
 	HDC dc = GetDC(display); //Цепляемся к окну
 	//SelectObject(dc, brush);
 	SetPixel(dc, x, y, col);
-	//DeleteObject(brush);
+	DeleteObject(brush);
 	ReleaseDC(display, dc);
 }
 //---------------------------------------------------------------------------------------

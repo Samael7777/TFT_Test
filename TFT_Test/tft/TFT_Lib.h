@@ -10,8 +10,6 @@
 
 
 typedef struct {
-    uint16_t pos_x;
-    uint16_t pos_y;
 	uint16_t cur_x;
 	uint16_t cur_y;
 	uint16_t fore_color;
@@ -19,6 +17,7 @@ typedef struct {
 	uint16_t max_pos;
 	uint16_t max_lines;
 } Cursor_t;
+
 
 typedef struct {
     uint16_t x_pos;
@@ -87,6 +86,7 @@ void FontSelect(TFT_FONT_t* font);
 void ConsoleClean(uint16_t bc);
 void ConsolePutChar( char chr, uint16_t fc, uint16_t bc );
 void ConsolePutString( char* str, uint16_t fc, uint16_t bc );
+void ConsolePutStringln(char* str, uint16_t fc, uint16_t bc);
 void PutString_Hex8(uint8_t chr, uint16_t fc, uint16_t bc );
 void PutString_Hex16(uint16_t chr, uint16_t fc, uint16_t bc );
 void PutString_Hex32(uint32_t chr, uint16_t fc, uint16_t bc );
