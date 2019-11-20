@@ -260,4 +260,4 @@ const uint8_t font_5x8[256][8]={
 {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}    // 0xFF
 };
 
-TFT_FONT_t FONT_5X8 = {(unsigned char*)font_5x8,FONT_TYPE_1BPP,5,8,0,255,NULL};
+TFTFontType FONT_5X8 = {(unsigned char*)font_5x8,FONT_TYPE_1BPP,5,8,0,255,NULL};

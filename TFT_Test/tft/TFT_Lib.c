@@ -16,14 +16,15 @@ const uint32_t digits[] =
 typedef struct {
 	uint16_t pix_x;
 	uint16_t pix_y;
-} Pixel_t;
+} PixelType;
 
-extern Options_t TFT_Opts;
-TFT_FONT_t tft_font;
+extern OptionsType TFT_Opts;
+TFTFontType tft_font;
 
-Cursor_t cur;
-Console_t console;
+CursorType cur;
+ConsoleType console;
 
+uint16_t LinePixels;		//Ширина 1 линии в пикселях
 
 void ConsoleSetArea(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye)
 {
@@ -42,9 +43,22 @@ void ConsoleSetArea(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye)
 
 void ConsoleClean(uint16_t bc)
 {
-	FillRectangle(console.x_start, console.y_start, console.x_end, console.y_end, bc);
+	FillRectangle(0, console.y_start, TFT_GetWidth(), console.y_end, bc);
 	cur.cur_x = 0;
 	cur.cur_y = 0;
+}
+
+void ConsoleMark(char* text, uint16_t line, uint16_t fc, uint16_t bc)
+{
+	uint16_t ys = console.y_start + line * LinePixels;
+	uint16_t ye = ys + LinePixels;
+	FillRectangle(console.x_start, ys, console.x_end, ye, bc);
+	PutString(console.x_start, ys, text, &tft_font, fc, bc);
+}
+
+uint16_t ConsoleGetLineHeight()
+{
+	return LinePixels;
 }
 
 void TFT_Init()
@@ -59,7 +73,7 @@ void TFT_Deinit()
 	Drv_deinit();
 }
 //---------------------------------------------------------------------------------------
-void SetCursor( uint16_t x, uint16_t y )
+void CursorSet(uint16_t x, uint16_t y)
 {
 	cur.cur_x = (x < cur.max_pos) ? x : cur.max_pos;
 	cur.cur_y = (y < cur.max_lines) ? x : cur.max_lines;
@@ -353,7 +367,7 @@ void DrawEllipse( int16_t x0, int16_t y0, int16_t rx,int16_t ry, uint16_t color 
   radi1 = rx;
   radi2 = ry;
 
-  k = (float)(rad2/radi1);  
+  k = (float)(radi2/radi1);  
 
   do { 
     DrawPixel((x0-(uint16_t)(x/k)), (y0+y), color);
@@ -379,7 +393,7 @@ void FillEllipse( int16_t x0, int16_t y0, int16_t rx,int16_t ry, uint16_t color 
   radi1 = rx;
   radi2 = ry;
 
-  k = (float)(rad2/radi1);
+  k = (float)(radi2/radi1);
 
   do 
   {       
@@ -524,24 +538,26 @@ void FontSetHSpace( int8_t s )
 void FontSetVSpace( int8_t s )
 {
    char_v_space = s;
+   LinePixels = tft_font.char_height + char_v_space;
 }
 //---------------------------------------------------------------------------------------
-void FontSelect( TFT_FONT_t *font )
+void FontSelect( TFTFontType *font )
 {
-  tft_font = *font;	
+  tft_font = *font;
+  LinePixels = tft_font.char_height + char_v_space;
 }
 //---------------------------------------------------------------------------------------
 // Рисует ASCII символ шрифтом одного размера на позиции х, у.
 // Цвет шрифта и фон
 // Шрифт должен быть передан с оператором & 
 //---------------------------------------------------------------------------------------
-void PutChar( int16_t x, int16_t y, char chr, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void PutChar( int16_t x, int16_t y, char chr, TFTFontType *font, uint16_t fc, uint16_t bc )
 {
 	uint16_t i, j, k, c, bn, actual_char_width;
 	uint8_t b, bt;
 	uint32_t index;
 	uint32_t color;
-	Pixel_t pixel;
+	PixelType pixel;
 
 	bt = (uint8_t)chr;
 
@@ -636,7 +652,7 @@ void PutChar( int16_t x, int16_t y, char chr, TFT_FONT_t *font, uint16_t fc, uin
 // Цвет шрифта и фон
 // Шрифт должен быть передан с оператором & 
 //---------------------------------------------------------------------------------------
-void PutString( uint16_t x, uint16_t y, char *str, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void PutString( uint16_t x, uint16_t y, char *str, TFTFontType *font, uint16_t fc, uint16_t bc )
 {
   uint8_t cw;
   unsigned char chr;
@@ -679,7 +695,7 @@ void PutString( uint16_t x, uint16_t y, char *str, TFT_FONT_t *font, uint16_t fc
    }
 }
 //---------------------------------------------------------------------------------------
-void UTF8rusPutString( uint16_t x, uint16_t y, char *str, TFT_FONT_t *font, uint16_t fc, uint16_t bc )
+void UTF8rusPutString( uint16_t x, uint16_t y, char *str, TFTFontType *font, uint16_t fc, uint16_t bc )
 {
   unsigned char chr;
   uint8_t cw;
@@ -1053,13 +1069,13 @@ void ConsolePutString( char* str, uint16_t fc, uint16_t bc )
           continue;
         }
 
-      if ((cur.cur_x) > cur.max_pos)
+      if ((cur.cur_x) >= cur.max_pos)
         {
           cur.cur_x = 0;
           cur.cur_y += 1;
         }
 
-	  if ((cur.cur_y) > cur.max_lines)
+	  if ((cur.cur_y) >= cur.max_lines)
         {
           cur.cur_x = 0;
           cur.cur_y = 0;
@@ -1069,7 +1085,7 @@ void ConsolePutString( char* str, uint16_t fc, uint16_t bc )
    }
 }
 //---------------------------------------------------------------------------------------
-void ConsolePutStringln(char* str, uint16_t fc, uint16_t bc)
+void ConsolePutStringln(char* str, uint16_t fc, uint16_t bc) 
 {
 	ConsolePutString(str, fc, bc);
 	cur.cur_y++;

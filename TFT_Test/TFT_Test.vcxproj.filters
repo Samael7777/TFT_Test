@@ -35,12 +35,6 @@
     <ClCompile Include="tft\display_wnd.cpp">
       <Filter>Исходные файлы\TFT</Filter>
     </ClCompile>
-    <ClCompile Include="tft\TFT_Lib.cpp">
-      <Filter>Исходные файлы\TFT</Filter>
-    </ClCompile>
-    <ClCompile Include="tft\win32_drv.cpp">
-      <Filter>Исходные файлы\TFT</Filter>
-    </ClCompile>
     <ClCompile Include="Font\arial_sevenseg_num_32x50.c">
       <Filter>Исходные файлы\Fonts</Filter>
     </ClCompile>
@@ -197,8 +191,17 @@
     <ClCompile Include="Font\sevenseg_num_64x100.c">
       <Filter>Исходные файлы\Fonts</Filter>
     </ClCompile>
-    <ClCompile Include="GUI\GUI.cpp">
+    <ClCompile Include="GUI\GUI.c">
       <Filter>Исходные файлы\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="GUI\MenuMode.c">
+      <Filter>Исходные файлы\GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="tft\TFT_Lib.c">
+      <Filter>Исходные файлы\TFT</Filter>
+    </ClCompile>
+    <ClCompile Include="tft\win32_drv.c">
+      <Filter>Исходные файлы\TFT</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -218,6 +221,9 @@
       <Filter>Файлы заголовков\Fonts</Filter>
     </ClInclude>
     <ClInclude Include="GUI\GUI.h">
+      <Filter>Файлы заголовков\GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI\MenuMode.h">
       <Filter>Файлы заголовков\GUI</Filter>
     </ClInclude>
   </ItemGroup>

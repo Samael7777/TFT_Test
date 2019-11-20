@@ -137,4 +137,4 @@ const uint8_t Arial_14x22[96][44] = {
 // Font-Struktur
 //--------------------------------------------------------------
 
-TFT_FONT_t ARIAL_14X22 = {(unsigned char*)Arial_14x22,FONT_TYPE_2BPP,14,22,32,127,NULL};
+TFTFontType ARIAL_14X22 = {(unsigned char*)Arial_14x22,FONT_TYPE_2BPP,14,22,32,127,NULL};

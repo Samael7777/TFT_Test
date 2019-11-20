@@ -32,7 +32,7 @@ typedef struct
    uint16_t start_char;
    uint16_t end_char;
    uint8_t  *widths;
-} TFT_FONT_t;
+} TFTFontType;
 
 //--------------------------------------------------------------
 // Структура пропорционального шрифта (не более 16 пикселей шириной)
@@ -63,9 +63,9 @@ typedef struct _pFont32_t
 // которые необходимо подключить к проекту
 //--------------------------------------------------------------
 
-extern  TFT_FONT_t CONSOLAS_12x22;
-extern  TFT_FONT_t SEVENSEG_NUM_32X50;
-extern  TFT_FONT_t SEVENSEG_NUM_64X100;
+extern  TFTFontType CONSOLAS_12x22;
+extern  TFTFontType SEVENSEG_NUM_32X50;
+extern  TFTFontType SEVENSEG_NUM_64X100;
 
 //extern  TFT_FONT_t ARIAL_SEVENSEG_NUM_32X50;
 //extern  TFT_FONT_t FONT_4X6;

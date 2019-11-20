@@ -4,8 +4,10 @@
 //******************************************************************************
 
 #include "win32_drv.h"
-
-Options_t TFT_Opts;
+#include <Windows.h>
+#include "display_wnd.h"
+#include <stdint.h>
+OptionsType TFT_Opts;
 HWND display;
 
 

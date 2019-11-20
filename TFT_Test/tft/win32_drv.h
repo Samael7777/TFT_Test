@@ -3,14 +3,10 @@
  *  win32_drv.h
  * 
  */
-
+#include <stdint.h>
 
 #ifndef __WIN32_DRV_H
 #define __WIN32_DRV_H
-
-#include <windows.h>
-#include <stdint.h>
-#include "display_wnd.h"
 
 
 #define TFT_WIDTH       ((uint16_t)320)
@@ -38,7 +34,7 @@ typedef struct {
 	uint16_t Height;
 	Orientation_t orient;
 	TFT_Orientation orientation; // 1 = portrait; 0 = landscape
-} Options_t;
+} OptionsType;
 
 //Commands
 

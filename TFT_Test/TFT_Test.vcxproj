@@ -84,8 +84,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
@@ -94,7 +93,7 @@
       <AdditionalIncludeDirectories>D:\Documents\My Projects\TFT_Test\TFT_Test\tft;D:\Documents\My Projects\TFT_Test\TFT_Test\Font;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -110,7 +109,7 @@
       <AdditionalIncludeDirectories>D:\My Documents\My Projects\TFT_Test\TFT_Test\tft;D:\My Documents\My Projects\TFT_Test\TFT_Test\Font;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -205,15 +204,17 @@
     <ClCompile Include="Font\pFont_15_cyr.c" />
     <ClCompile Include="Font\sevenseg_num_32x50.c" />
     <ClCompile Include="Font\sevenseg_num_64x100.c" />
-    <ClCompile Include="GUI\GUI.cpp" />
+    <ClCompile Include="GUI\GUI.c" />
+    <ClCompile Include="GUI\MenuMode.c" />
     <ClCompile Include="tft\display_wnd.cpp" />
-    <ClCompile Include="tft\TFT_Lib.cpp" />
-    <ClCompile Include="tft\win32_drv.cpp" />
+    <ClCompile Include="tft\TFT_Lib.c" />
+    <ClCompile Include="tft\win32_drv.c" />
     <ClCompile Include="TFT_Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Font\Font.h" />
     <ClInclude Include="GUI\GUI.h" />
+    <ClInclude Include="GUI\MenuMode.h" />
     <ClInclude Include="tft\COLOR_RGB565.h" />
     <ClInclude Include="tft\display_wnd.h" />
     <ClInclude Include="tft\TFT_Lib.h" />

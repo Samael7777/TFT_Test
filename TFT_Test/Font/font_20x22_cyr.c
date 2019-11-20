@@ -4133,4 +4133,4 @@ const uint8_t font_20x22_cyr[224][66]={
 0x00,0x00,0x00} //
 };    
 
-TFT_FONT_t FONT_20X22_CYR = {(unsigned char*)font_20x22_cyr,FONT_TYPE_2BPP,20,22,32,255,NULL};
+TFTFontType FONT_20X22_CYR = {(unsigned char*)font_20x22_cyr,FONT_TYPE_2BPP,20,22,32,255,NULL};

@@ -9787,4 +9787,4 @@ const uint8_t font_34x53_cyr[224][265]={
 0x00,0x00,0x00,0x00,0x00}//                                   
 };
 
-TFT_FONT_t FONT_34X53_CYR = {(unsigned char*)font_34x53_cyr,FONT_TYPE_2BPP,34,53,32,255,NULL};
+TFTFontType FONT_34X53_CYR = {(unsigned char*)font_34x53_cyr,FONT_TYPE_2BPP,34,53,32,255,NULL};

@@ -1,4 +1,6 @@
 #include "display_wnd.h"
+#include "..\GUI\GUI.h"
+#include <Windows.h>
 
 
 HANDLE thrd;
@@ -7,6 +9,25 @@ MSG msg;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 void DisplayThread();
+void ProcessKey(WPARAM key);
+
+void ProcessKey(WPARAM key)
+{
+	switch (key)
+	{
+	case VK_UP:
+		GuiProcess(KEY_UP);
+		break;
+	case VK_DOWN:
+		GuiProcess(KEY_DOWN);
+		break;
+	case VK_RETURN:
+		GuiProcess(KEY_ENT);
+		break;
+	default:
+		break;
+	}
+}
 
 HWND DisplayInit() 
 {
@@ -37,7 +58,7 @@ void DisplayDeinit()
 void DisplayThread()
 {
 	WNDCLASS wndClass;
-	
+
 	wndClass.style = CS_HREDRAW | CS_VREDRAW;
 	wndClass.lpfnWndProc = WndProc;
 	wndClass.cbClsExtra = 0;
@@ -53,7 +74,7 @@ void DisplayThread()
 
 	RegisterClass(&wndClass);
 
-	
+
 	hWnd = CreateWindow(
 		TEXT("TFT Display"),	  // window class name
 		TEXT("TFT Display"),	  // window caption
@@ -87,9 +108,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		return 0;
 	case WM_PAINT:
 	{
-	
-	}
 		return 0;
+	}
+	case WM_KEYDOWN:
+	{
+		ProcessKey(wParam);
+		return 0;
+	}
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		return 0;

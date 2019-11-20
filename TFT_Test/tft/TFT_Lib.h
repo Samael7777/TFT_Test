@@ -3,10 +3,10 @@
 #define __TFT_LIB_H
 
 #include <stdint.h>
-#include <Windows.h>
 #include "../Font/Font.h"
 #include "win32_drv.h"
 #include "COLOR_RGB565.h"
+
 
 
 typedef struct {
@@ -16,19 +16,17 @@ typedef struct {
 	uint16_t back_color;
 	uint16_t max_pos;
 	uint16_t max_lines;
-} Cursor_t;
+} CursorType;
 
 
 typedef struct {
-    uint16_t x_pos;
-    uint16_t y_pos;
     uint16_t x_start;
     uint16_t y_start;
     uint16_t x_end;
     uint16_t y_end;
     uint16_t fore_color;
     uint16_t back_color;
-} Console_t;
+} ConsoleType;
 
 //---------------------------------------------------------------------------
 #define swap(a, b) { int16_t t = a; a = b; b = t; }
@@ -62,9 +60,9 @@ void DrawPie( int16_t x, int16_t y, int16_t r, int16_t startAngle, int16_t endAn
 void FillScreen(uint16_t color);
 
 
-void PutChar( int16_t x, int16_t y, char chr, TFT_FONT_t *font, uint16_t fc, uint16_t bc );
-void PutString( uint16_t x, uint16_t y, char *str, TFT_FONT_t *font, uint16_t fc, uint16_t bc);
-void UTF8rusPutString( uint16_t x, uint16_t y, char *str, TFT_FONT_t *font, uint16_t fc, uint16_t bc );
+void PutChar( int16_t x, int16_t y, char chr, TFTFontType *font, uint16_t fc, uint16_t bc );
+void PutString( uint16_t x, uint16_t y, char *str, TFTFontType *font, uint16_t fc, uint16_t bc);
+void UTF8rusPutString( uint16_t x, uint16_t y, char *str, TFTFontType *font, uint16_t fc, uint16_t bc );
 
 void DrawImage( uint16_t x0, uint16_t y0, uint16_t size_x, uint16_t size_y, uint16_t *img );
 
@@ -77,13 +75,15 @@ void DrawPString32( uint16_t x, uint16_t y,char *ptr, pFont32 *font, uint16_t vg
 void ConsoleSetArea( uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye );
 uint16_t GetCursor_x(void);
 uint16_t GetCursor_y(void);
-void SetCursor(uint16_t x, uint16_t y);
+void CursorSet(uint16_t x, uint16_t y);
+uint16_t ConsoleGetLineHeight();
 
 void FontSetHSpace(int8_t s);
 void FontSetVSpace(int8_t s);
-void FontSelect(TFT_FONT_t* font);
+void FontSelect(TFTFontType* font);
 
 void ConsoleClean(uint16_t bc);
+void ConsoleMark(char* text, uint16_t line, uint16_t fc, uint16_t bc);
 void ConsolePutChar( char chr, uint16_t fc, uint16_t bc );
 void ConsolePutString( char* str, uint16_t fc, uint16_t bc );
 void ConsolePutStringln(char* str, uint16_t fc, uint16_t bc);

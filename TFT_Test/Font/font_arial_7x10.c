@@ -137,4 +137,4 @@ const uint8_t Arial_7x10[96][10] = {
 // Font-Struktur
 //--------------------------------------------------------------
 
-TFT_FONT_t ARIAL_7X10 = {(unsigned char*)Arial_7x10,FONT_TYPE_2BPP,7,10,32,127,NULL};
+TFTFontType ARIAL_7X10 = {(unsigned char*)Arial_7x10,FONT_TYPE_2BPP,7,10,32,127,NULL};

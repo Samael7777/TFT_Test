@@ -2,61 +2,68 @@
 #define __GUI_H
 
 #include "..\tft\TFT_Lib.h"
-#include <stdio.h>
+#include <stdbool.h>
+
 
 
 //Основные параметры
 
-#define MAIN_FONT		CONSOLAS_12x22	//Основной шрифт
-#define FONT_COLOR		C_WHITE			//Цвет текста
-#define BKG_COLOR		C_BLUE			//Цвет фона
-#define SEL_COLOR		C_WHITE			//Цвет выделенного текста
-#define SEL_BG_COLOR	C_RED			//Цвет фона выделения
+#define MAIN_FONT			CONSOLAS_12x22	//Основной шрифт
+#define FONT_COLOR			C_SLATE_BLUE 	//Цвет текста
+#define BKG_COLOR			C_WHITE			//Цвет фона
+#define SEL_COLOR			C_WHITE			//Цвет выделенного текста
+#define SEL_BG_COLOR		C_SLATE_BLUE 	//Цвет фона выделения
+#define SBAR_BG_COLOR		C_SLATE_BLUE	//Фон статусбара
+#define SBAR_F_COLOR		C_WHITE			//Цвет шрифта статусбара
 
-constexpr auto LINE_VERT_INT =	0;		//Расстояние между соседними строками в пикселях;
-constexpr auto BORDER =			20;		//Отступ от краев экрана в пикселях;
-constexpr auto MENU_SPACE =		10;		//Отступ от названия меню;
-constexpr auto HEADER_HEIGHT =	30;		//Высота хедера в пикселях;
+#define LINE_VERT_INT		0				//Расстояние между соседними строками в пикселях;
+#define BORDER				20				//Отступ от краев экрана в пикселях;
+#define MENU_SPACE			10				//Отступ от названия меню;
+#define SBAR_HEIGHT			44				//Высота статусбара в пикселях;
 
-//Описание пункта меню
-typedef struct MenuItem
-{
-	char*	Text;				//Название пункта меню
-	void*	child = NULL;		//Ссылка на меню-потомка
-	void*	prev = NULL;		//Ссылка на предыдущий пункт меню
-	void*	next = NULL;		//Ссылка на следующий пункт меню
-	void*	Exec = NULL;		//Ссылка на действие
-} MenuItem_t;
-
-//Описание заголовка меню
-typedef struct Menu
-{
-	char*		title;				//Название меню
-	void*		parent = NULL;		//Ссылка на меню-предка
-	MenuItem_t*	item;				//Ссылка на первый пункт меню
-} Menu_t;
 
 //Описание команд меню
 typedef enum Command
 {
-	MNU_UP,
-	MNU_DOWN,
-	MNU_SEL
-} Command_t;
+	KEY_UP,
+	KEY_DOWN,
+	KEY_LEFT,
+	KEY_RIGHT,
+	KEY_ESC,
+	KEY_ENT,
+	KEY_Z1,
+	KEY_Z2,
+	KEY_Z3,
+	KEY_FAN
+} CommandType;
+
+typedef enum GuiMode		//Режим работы GUI
+{
+	GUI_MENU,
+	GUI_PC,
+	GUI_AUTO,
+	GUI_MANUAL,
+	GUI_FIRMWARE
+} GuiModeType;
 
 //Структура статуса хедера
 typedef struct
 {
-	boolean fan;
-	boolean z1;
-	boolean z2;
-	boolean z3;
-} HeaderData_t;
+	bool fan;
+	bool z1;
+	bool z2;
+	bool z3;
+} StatusBarDataType;
 
 //Прототипы функций
-void GuiInit(void);						//Инициализация
-void NavigateMenu(Command_t com);		//Навигация по меню
-void UpdateTime(void);					//Обновить время
-void SetHeaderData(HeaderData_t* hd);	//Установить статус хедера
+void GuiInit(void);							//Инициализация
+void GuiDeinit(void);						//Деинициализация
+void GuiProcess(CommandType cmd);			//Обработка команд
+void UpdateTime(void);						//Обновить время
+void SetSBarData(StatusBarDataType* sbd);	//Установить параметры статусбара
+GuiModeType GuiGetMode(void);
+void GuiSetMode(GuiModeType mode);
+void SetMenuMode(void);					//Включение режима меню
+
 
 #endif
