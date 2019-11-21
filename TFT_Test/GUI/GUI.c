@@ -5,11 +5,10 @@
 
 GuiModeType CurrentMode;
 
-
+void (*KeyProcessor)(CommandType cmd);		//Указатель на функцию обработки нажатий
 
 //Прототипы
 
-void SetEditMode(void* param);
 void SetPCMode(void);
 void SetAutoMode(void);
 void SetManualMode(void);
@@ -20,16 +19,7 @@ void StatusbarInit(void);
 
 void GuiProcess(CommandType cmd)
 {
-	switch (CurrentMode)
-	{
-		case GUI_MENU:
-		{
-			NavigateMenu(cmd);
-			break;
-		}
-		default:
-			break;
-	}
+	KeyProcessor(cmd);
 }
 
 void GuiInit(void)
@@ -42,7 +32,6 @@ void GuiInit(void)
 	StatusbarInit();
 	InitMenuStructures();
 	GuiSetMode(GUI_MENU);
-
 }
 
 void StatusbarInit(void)
@@ -58,6 +47,7 @@ void GuiSetMode(GuiModeType mode)
 	{
 		case GUI_MENU:
 		{
+			KeyProcessor = NavigateMenu;
 			SetMenuMode();
 			break;
 		}

@@ -4,7 +4,7 @@
 #include "TFT_Lib.h"
 #include <math.h>
 
-//uint16_t cur_x, cur_y;
+//uint16_t x, y;
 int8_t char_h_space = 0;		// разряженость шрифта по горизонтали (кол-во пикселей между символами)
 int8_t char_v_space = 0;		// разряженость шрифта по вертикали (кол-во пикселей между строками)
 
@@ -13,10 +13,6 @@ const uint8_t hex_decode[] =
 const uint32_t digits[] =
 {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 
-typedef struct {
-	uint16_t pix_x;
-	uint16_t pix_y;
-} PixelType;
 
 extern OptionsType TFT_Opts;
 TFTFontType tft_font;
@@ -24,7 +20,8 @@ TFTFontType tft_font;
 CursorType cur;
 ConsoleType console;
 
-uint16_t LinePixels;		//Ширина 1 линии в пикселях
+uint16_t LineHeight;		//Высота 1 линии в пикселях
+uint16_t CharWidth;			//Ширина 1 символа в пикселях
 
 void ConsoleSetArea(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye)
 {
@@ -35,30 +32,68 @@ void ConsoleSetArea(uint16_t xs, uint16_t ys, uint16_t xe, uint16_t ye)
 	console.x_end = (xe <= d_width) ? xe : d_width;
 	console.y_start = (ys <= d_height) ? ys : (d_height);
 	console.y_end = (ye <= d_height) ? ye : d_height;
-	cur.max_pos = (console.x_end - console.x_start) / (tft_font.char_width + char_h_space);
-	cur.max_lines = (console.y_end - console.y_start) / (tft_font.char_height + char_v_space);
-	cur.cur_x = 0;
-	cur.cur_y = 0;
+	console.max_pos = (console.x_end - console.x_start) / (tft_font.char_width + char_h_space)-1;
+	console.max_lines = (console.y_end - console.y_start) / (tft_font.char_height + char_v_space);
+	cur.x = 0;
+	cur.y = 0;
+}
+
+uint16_t ConsoleGetMaxChars(void)
+{
+	return console.max_pos;
+}
+
+uint16_t ConsoleGetMaxLines(void)
+{
+	return console.max_lines;
 }
 
 void ConsoleClean(uint16_t bc)
 {
 	FillRectangle(0, console.y_start, TFT_GetWidth(), console.y_end, bc);
-	cur.cur_x = 0;
-	cur.cur_y = 0;
+	cur.x = 0;
+	cur.y = 0;
 }
 
-void ConsoleMark(char* text, uint16_t line, uint16_t fc, uint16_t bc)
+PixelType CursorToPixel(void)
 {
-	uint16_t ys = console.y_start + line * LinePixels;
-	uint16_t ye = ys + LinePixels;
-	FillRectangle(console.x_start, ys, console.x_end, ye, bc);
-	PutString(console.x_start, ys, text, &tft_font, fc, bc);
+	PixelType pix;
+	pix.x = console.x_start + cur.x * (tft_font.char_width + char_h_space);
+	pix.y = console.y_start + cur.y * (tft_font.char_height + char_v_space);
+	return pix;
 }
 
-uint16_t ConsoleGetLineHeight()
+void ConsoleMarkLine(char* text, uint16_t line, uint16_t fc, uint16_t bc)
 {
-	return LinePixels;
+	if (line >= console.max_lines) line = console.max_lines - 1;
+	CursorSet(0, line);
+	PixelType pix = CursorToPixel();
+	uint16_t ye = pix.y + LineHeight;
+	FillRectangle(console.x_start, pix.y, console.x_end, ye, bc);
+	ConsolePutString(text, fc, bc);
+}
+
+void ConsoleMarkChar(char* text, uint16_t x, uint16_t y, uint16_t fc, uint16_t bc)
+{
+	if (x >= console.max_pos) x = console.max_pos - 1;
+	if (y >= console.max_lines) x = console.max_lines - 1;
+	CursorSet(x, y);
+	PixelType s = CursorToPixel();
+	uint16_t xe = s.x + tft_font.char_width + char_h_space;
+	uint16_t ye = s.y + tft_font.char_height + char_v_space;
+	FillRectangle(s.x, s.y, xe, ye, bc);
+	ConsolePutChar(text, fc, bc);
+}
+
+
+uint16_t ConsoleGetLineHeight(void)
+{
+	return LineHeight;
+}
+
+uint16_t ConsoleGetCharWidth(void)
+{
+	return CharWidth;
 }
 
 void TFT_Init()
@@ -75,18 +110,18 @@ void TFT_Deinit()
 //---------------------------------------------------------------------------------------
 void CursorSet(uint16_t x, uint16_t y)
 {
-	cur.cur_x = (x < cur.max_pos) ? x : cur.max_pos;
-	cur.cur_y = (y < cur.max_lines) ? x : cur.max_lines;
+	cur.x = x;
+	cur.y = y;
 }
 //---------------------------------------------------------------------------------------
 uint16_t GetCursor_x(void)
 {
-  return (cur.cur_x);
+  return (cur.x);
 }
 //---------------------------------------------------------------------------------------
 uint16_t GetCursor_y(void)
 {
-  return (cur.cur_y);
+  return (cur.y);
 }
 //---------------------------------------------------------------------------------------
 void DrawLine( int16_t x1, int16_t y1, int16_t x2, int16_t y2, uint16_t color )
@@ -538,13 +573,14 @@ void FontSetHSpace( int8_t s )
 void FontSetVSpace( int8_t s )
 {
    char_v_space = s;
-   LinePixels = tft_font.char_height + char_v_space;
+   LineHeight = tft_font.char_height + char_v_space;
+   CharWidth = tft_font.char_width + char_h_space;
 }
 //---------------------------------------------------------------------------------------
 void FontSelect( TFTFontType *font )
 {
   tft_font = *font;
-  LinePixels = tft_font.char_height + char_v_space;
+  LineHeight = tft_font.char_height + char_v_space;
 }
 //---------------------------------------------------------------------------------------
 // Рисует ASCII символ шрифтом одного размера на позиции х, у.
@@ -563,7 +599,7 @@ void PutChar( int16_t x, int16_t y, char chr, TFTFontType *font, uint16_t fc, ui
 
 	if (bt < font->start_char || bt > font->end_char) return;
 
-	pixel.pix_y = y;
+	pixel.y = y;
 	bn = font->char_width;
 	if ( !bn ) return;
 	bn >>= 3;
@@ -575,7 +611,7 @@ void PutChar( int16_t x, int16_t y, char chr, TFTFontType *font, uint16_t fc, ui
 		 index = (bt - font->start_char)* font->char_height * bn;
 		 for( j = 0; j < font->char_height; j++ )			// цикл по оси "y"
 		 {
-			 pixel.pix_x = x;
+			 pixel.x = x;
 			 c = actual_char_width;
 			 for( i = 0; i < bn; i++ )									// цикл по ширине символа в байтах
 			 {
@@ -584,18 +620,18 @@ void PutChar( int16_t x, int16_t y, char chr, TFTFontType *font, uint16_t fc, ui
 				 {
 					 if( b & 0x01 )
 					 {
-							DrawPixel(pixel.pix_x, pixel.pix_y, fc);
+							DrawPixel(pixel.x, pixel.y, fc);
 					 }
 					 else
 					 {
-							DrawPixel(pixel.pix_x, pixel.pix_y, bc);
+							DrawPixel(pixel.x, pixel.y, bc);
 					 }
 					 b >>= 1;
-					 pixel.pix_x++;
+					 pixel.x++;
 					 c--;
 				 }
 			 }
-			 pixel.pix_y++;
+			 pixel.y++;
 		 }
 	}
 	else if (font->font_type == FONT_TYPE_2BPP)
@@ -603,7 +639,7 @@ void PutChar( int16_t x, int16_t y, char chr, TFTFontType *font, uint16_t fc, ui
 		 index = (bt - font->start_char)* font->char_height * bn;
 		 for( j = 0; j < font->char_height; j++ )			// цикл по оси "y"
 		 {
-			 pixel.pix_x = x;
+			 pixel.x = x;
 			 c = actual_char_width;
 			 for( i = 0; i < bn; i++ )									// цикл по ширине символа в байтах
 			 {
@@ -612,19 +648,19 @@ void PutChar( int16_t x, int16_t y, char chr, TFTFontType *font, uint16_t fc, ui
 				 {
 					 if( b & 0x80 )
 					 {
-							DrawPixel(pixel.pix_x, pixel.pix_y, fc);
+							DrawPixel(pixel.x, pixel.y, fc);
 					 }
 					 else
 					 {
-							DrawPixel(pixel.pix_x, pixel.pix_y, bc);
+							DrawPixel(pixel.x, pixel.y, bc);
 						 
 					 }
 					 b <<= 1;
-					 pixel.pix_x++;
+					 pixel.x++;
 					 c--;
 				 }
 			 }
-			 pixel.pix_y++;
+			 pixel.y++;
 		 }
 	}
 	else if (font->font_type == FONT_TYPE_8BPP)
@@ -632,18 +668,18 @@ void PutChar( int16_t x, int16_t y, char chr, TFTFontType *font, uint16_t fc, ui
 		 index = (bt - font->start_char)* font->char_height * font->char_width;
 		 for( j=0; j<font->char_height; j++ )
 		 {
-				pixel.pix_x = x;
+				pixel.x = x;
 				for( i=0; i<actual_char_width; i++ )
 				{
 					 b = font->p[index++];
 					 color = ((((fc & 0xFF) * b + (bc & 0xFF) * (256 - b)) >> 8) & 0xFF) |							//Blue component
 									 ((((fc & 0xFF00) * b + (bc & 0xFF00) * (256 - b)) >> 8)  & 0xFF00) |			//Green component
 									 ((((fc & 0xFF0000) * b + (bc & 0xFF0000) * (256 - b)) >> 8) & 0xFF0000);		//Red component
-					 DrawPixel(pixel.pix_x, pixel.pix_y, color);
-					 pixel.pix_x++;
+					 DrawPixel(pixel.x, pixel.y, color);
+					 pixel.x++;
 				}
 				index += font->char_width - actual_char_width;
-				pixel.pix_y++;
+				pixel.y++;
 		 }
 	}
 }
@@ -657,8 +693,8 @@ void PutString( uint16_t x, uint16_t y, char *str, TFTFontType *font, uint16_t f
   uint8_t cw;
   unsigned char chr;
 
-  cur.cur_x = x;
-  cur.cur_y = y;
+  cur.x = x;
+  cur.y = y;
 
   while ( *str != 0 )
    {
@@ -666,7 +702,7 @@ void PutString( uint16_t x, uint16_t y, char *str, TFTFontType *font, uint16_t f
 
 		  if ( chr == '\r' )
         {
-          cur.cur_x = 0;
+          cur.x = 0;
           continue;
         }
 
@@ -674,24 +710,24 @@ void PutString( uint16_t x, uint16_t y, char *str, TFTFontType *font, uint16_t f
 
 		  if ( chr == '\n' )
         {
-          cur.cur_y += font->char_height + char_v_space;
+          cur.y += font->char_height + char_v_space;
           continue;
         }
 
-		  if ((cur.cur_x + cw + char_h_space) > TFT_Opts.Width - 1)
+		  if ((cur.x + cw + char_h_space) > TFT_Opts.Width - 1)
         {
-          cur.cur_x = 0;
-          cur.cur_y += font->char_height + char_v_space;
+          cur.x = 0;
+          cur.y += font->char_height + char_v_space;
         }
 
-		  if ((cur.cur_y + font->char_height + char_v_space) > TFT_Opts.Height - 1)
+		  if ((cur.y + font->char_height + char_v_space) > TFT_Opts.Height - 1)
         {
-          cur.cur_x = 0;
-          cur.cur_y = 0;
+          cur.x = 0;
+          cur.y = 0;
         }
 
-      PutChar(cur.cur_x, cur.cur_y, chr, font, fc, bc);
-      cur.cur_x += cw + char_h_space;
+      PutChar(cur.x, cur.y, chr, font, fc, bc);
+      cur.x += cw + char_h_space;
    }
 }
 //---------------------------------------------------------------------------------------
@@ -699,9 +735,9 @@ void UTF8rusPutString( uint16_t x, uint16_t y, char *str, TFTFontType *font, uin
 {
   unsigned char chr;
   uint8_t cw;
-
-  cur.cur_x = x;
-  cur.cur_y = y;
+ 
+  cur.x = x;
+  cur.y = y;
 
   while (*str != 0)
    {
@@ -729,30 +765,30 @@ void UTF8rusPutString( uint16_t x, uint16_t y, char *str, TFTFontType *font, uin
 
       if ( chr == '\r' )
         {
-          cur.cur_x = 0;
+          cur.x = 0;
           continue;
         }
 
       if ( chr == '\n' )
         {
-					cur.cur_y += font->char_height + char_v_space;
+					cur.y += font->char_height + char_v_space;
 					continue;
 				}
 
-      if ((cur.cur_x + cw + char_h_space) > TFT_Opts.Width - 1)
+      if ((cur.x + cw + char_h_space) > TFT_Opts.Width - 1)
         {
-          cur.cur_x = 0;
-          cur.cur_y += font->char_height + char_v_space;
+          cur.x = 0;
+          cur.y += font->char_height + char_v_space;
         }
 
-	  if ((cur.cur_y + font->char_height + char_v_space) > TFT_Opts.Height - 1)
+	  if ((cur.y + font->char_height + char_v_space) > TFT_Opts.Height - 1)
         {
-          cur.cur_x = 0;
-          cur.cur_y = 0;
+          cur.x = 0;
+          cur.y = 0;
         }
 
-      PutChar(cur.cur_x, cur.cur_y, chr, font, fc, bc);
-      cur.cur_x += cw + char_h_space;
+      PutChar(cur.x, cur.y, chr, font, fc, bc);
+      cur.x += cw + char_h_space;
    }
 }
 //---------------------------------------------------------------------------------------
@@ -1032,21 +1068,21 @@ void ConsolePutChar( char chr, uint16_t fc, uint16_t bc )
 {
 	int x,y;
 
-	if ((cur.cur_x) > cur.max_pos)
+	if ((cur.x) >= console.max_pos)
 	{
-		cur.cur_x = 0;
-		cur.cur_y += 1;
+		cur.x = 0;
+		cur.y += 1;
 	}
 
-	if ((cur.cur_y) > cur.max_lines)
+	if ((cur.y) >= console.max_lines)
 	{
-		cur.cur_x = 0;
-		cur.cur_y = 0;
+		cur.x = 0;
+		cur.y = 0;
 	}
-	x = console.x_start + cur.cur_x * (tft_font.char_width + char_h_space);
-	y = console.y_start + cur.cur_y * (tft_font.char_height+ char_v_space);
+	x = console.x_start + cur.x * (tft_font.char_width + char_h_space);
+	y = console.y_start + cur.y * (tft_font.char_height+ char_v_space);
 	PutChar( x, y, chr, &tft_font, fc, bc );
-	cur.cur_x++;
+	cur.x++;
 }
 //---------------------------------------------------------------------------------------
 void ConsolePutString( char* str, uint16_t fc, uint16_t bc )
@@ -1059,26 +1095,26 @@ void ConsolePutString( char* str, uint16_t fc, uint16_t bc )
 
 		if ( chr == '\r' )
         {
-          cur.cur_x = 0;
+          cur.x = 0;
           continue;
         }
 
 		if ( chr == '\n' )
         {
-		  cur.cur_y += 1;
+		  cur.y += 1;
           continue;
         }
 
-      if ((cur.cur_x) >= cur.max_pos)
+      if ((cur.x) > console.max_pos)
         {
-          cur.cur_x = 0;
-          cur.cur_y += 1;
+          cur.x = 0;
+          cur.y += 1;
         }
 
-	  if ((cur.cur_y) >= cur.max_lines)
+	  if ((cur.y) > console.max_lines)
         {
-          cur.cur_x = 0;
-          cur.cur_y = 0;
+          cur.x = 0;
+          cur.y = 0;
         }
 
       ConsolePutChar(chr, fc, bc);
@@ -1087,14 +1123,14 @@ void ConsolePutString( char* str, uint16_t fc, uint16_t bc )
 //---------------------------------------------------------------------------------------
 void ConsolePutStringln(char* str, uint16_t fc, uint16_t bc) 
 {
-	ConsolePutString(str, fc, bc);
-	cur.cur_y++;
-	cur.cur_x = 0;
-	if ((cur.cur_y) > cur.max_lines)
+	if ((cur.y) >= console.max_lines)
 	{
-		cur.cur_x = 0;
-		cur.cur_y = 0;
+		cur.x = 0;
+		cur.y = 0;
 	}
+	ConsolePutString(str, fc, bc);
+	cur.y++;
+	cur.x = 0;
 }
 //---------------------------------------------------------------------------------------
 void PutString_Hex8( uint8_t data, uint16_t fc, uint16_t bc )

@@ -5,6 +5,41 @@
 #include <stdlib.h>
 #include <string.h>
 
+//Описание пункта меню
+typedef struct MenuItem
+{
+	char* text;				//Название пункта меню
+	void* child;			//Ссылка на меню-потомка
+	void* parent;			//Ссылка на заголовок меню
+	void* prev;				//Ссылка на предыдущий пункт меню
+	void* next;				//Ссылка на следующий пункт меню	
+	enum MenuAction action;		//Определение действия
+	void* param;			//Параметры действия
+} MenuItemType;
+
+//Описание заголовка меню
+typedef struct Menu
+{
+	char* title;				//Название меню
+	void* parent;				//Ссылка на меню-предка
+	MenuItemType* item;			//Ссылка на первый пункт меню
+} MenuType;
+
+//Действия меню
+enum MenuAction
+{
+	ACT_EXEC,
+	ACT_EDIT,
+	ACT_NEXT,
+	ACT_BACK
+};
+
+//Структура выделения пункта меню
+struct
+{
+	int pos;				//Позиция выделения (номер строки)
+	MenuItemType* ptr;		//Указатель на выделенный пункт меню
+} sel;
 
 
 int MaxLines;											//Максимальное количество пунктов меню для вывода
@@ -24,18 +59,14 @@ MenuType m2;
 MenuItemType m2_1, m2_2, m2_3;
 
 
-//Структура выделения пункта меню
-struct
-{
-	int pos;				//Позиция выделения (номер строки)
-	MenuItemType *ptr;		//Указатель на выделенный пункт меню
-} sel;
 
 
 void SetMenu(MenuType* menu);			//Показать заголовок окна и установить указатель меню на первый пункт
-void ShowMenu(void);					//Показать меню
+void ShowMenuBody(void);				//Показать меню
 void ShowSelection(bool status);		//Визуализация выделения (установить, снять)
 void ProcessAction(MenuItemType* mi);	//Обработка действий меню
+
+
 
 void inline InitMenu(MenuType* menu, char* title, void* parent, MenuItemType* item);
 void inline InitMenuItem(MenuItemType* menuitem, char* text, void* child, void* parent, void* prev, void* next, enum MenuAction action, void* param);
@@ -47,7 +78,9 @@ void InitMenuStructures(void)
 	InitMenuItem(&m1_1, (char*)"Пайка по профилю", NULL, &m1, NULL, &m1_2, ACT_EXEC, NULL);
 	InitMenuItem(&m1_2, (char*)"Пайка в ручном режиме", NULL, &m1, &m1_1, &m1_3, ACT_EXEC, NULL);
 	InitMenuItem(&m1_3, (char*)"Управление с ПК", NULL, &m1, &m1_2, &m1_4, ACT_EXEC, NULL);
-	InitMenuItem(&m1_4, (char*)"Настройки", &m2, &m1, &m1_3, NULL, ACT_MENU, NULL);
+	InitMenuItem(&m1_4, (char*)"Настройки", &m2, &m1, &m1_3, NULL, ACT_NEXT, NULL);
+
+	   	  
 	//Настройка меню Настройки
 	InitMenu(&m2, (char*)"Настройки", &m1, &m2_1);
 	InitMenuItem(&m2_1, (char*)"Настройки времени", NULL, &m2, NULL, &m2_2, ACT_EXEC, NULL);
@@ -87,19 +120,19 @@ void SetMenuMode(void)
 	MenuTitle_height = MAIN_FONT.char_height + LINE_VERT_INT + 1;
 	MenuBody_pos_y = MenuTitle_pos_y + MenuTitle_height + 10;
 	//Предельные размеры
-	MaxLines = (LCD_Height - MenuBody_pos_y) / (MAIN_FONT.char_height + LINE_VERT_INT);
-	MaxChars = (LCD_Width - 2 * BORDER) / MAIN_FONT.char_width;
 
 	ConsoleSetArea(BORDER, MenuBody_pos_y, LCD_Width - BORDER, LCD_Height - BORDER);
+	MaxLines = ConsoleGetMaxLines();
+	MaxChars = ConsoleGetMaxChars();
 	SetMenu(&m1);
-	ShowMenu();
+	ShowMenuBody();
 	ShowSelection(true);
 }
 
 
 void SetMenu(MenuType *menu)
 {
-	FillRectangle(0, LCD_Width, MenuTitle_pos_y, MenuBody_pos_y, BKG_COLOR); //Очистка области под заголовок
+	FillRectangle(0, MenuTitle_pos_y, LCD_Width, MenuBody_pos_y, BKG_COLOR); //Очистка области под заголовок
 	MenuTitle_pos_x = (LCD_Width - strlen(menu->title) * MAIN_FONT.char_width) / 2; //Выравнивание заголовка по середине экрана
 	PutString(MenuTitle_pos_x, MenuTitle_pos_y, menu->title, &MAIN_FONT, FONT_COLOR, BKG_COLOR);
 	DrawHLine(MenuTitle_pos_x, (MenuTitle_pos_y + ConsoleGetLineHeight() + 1), (strlen(menu->title) * MAIN_FONT.char_width), FONT_COLOR);
@@ -112,25 +145,25 @@ void SetMenu(MenuType *menu)
 }
 
 
-void ShowMenu()
+void ShowMenuBody()
 {
 	uint16_t fc, bc;
+	uint16_t pos;
 	ConsoleClean(BKG_COLOR); //Очистка области тела меню
 	CursorSet(0, 0);
+	pos = 0;
 	MenuItemType *ptr = (MenuItemType*)fl_ptr;
-	while (ptr != NULL)
+	while ((ptr != NULL) && (pos < MaxLines))
 	{
 		fc = FONT_COLOR;
 		bc = BKG_COLOR;
-		char* txt = ptr->text;
-		char* buf = (char*)calloc(MaxChars, sizeof(char));
-		if (!buf) return;
-		strncat(buf, txt, MaxChars);
-		ConsolePutStringln(buf, fc, bc);
-		free(buf);
+		CursorSet(0, pos);
+		ConsolePutString(ptr->text, fc, bc);
 		ptr = (MenuItemType*)ptr->next;
+		pos++;
 	}
 	ShowSelection(true);
+
 }
 
 void ShowSelection(bool status)
@@ -147,7 +180,7 @@ void ShowSelection(bool status)
 		fc = FONT_COLOR;
 		bc = BKG_COLOR;
 	}
-	ConsoleMark(sel.ptr->text, sel.pos, fc, bc);
+	ConsoleMarkLine(sel.ptr->text, sel.pos, fc, bc);
 }
 
 void NavigateMenu(CommandType com)
@@ -162,11 +195,11 @@ void NavigateMenu(CommandType com)
 			sel.pos++;
 			if (sel.pos >= MaxLines)
 			{
-				sel.pos = MaxLines;
+				sel.pos = MaxLines-1;
 				if (fl_ptr->next != NULL)
 				{
 					fl_ptr = (MenuItemType*)fl_ptr->next;
-					ShowMenu();
+					ShowMenuBody();
 				}
 			}
 			ShowSelection(true);
@@ -184,7 +217,7 @@ void NavigateMenu(CommandType com)
 				if (fl_ptr->prev != NULL)
 				{
 					fl_ptr = (MenuItemType*)fl_ptr->prev;
-					ShowMenu();
+					ShowMenuBody();
 				}
 			}
 			ShowSelection(true);
@@ -203,18 +236,19 @@ void ProcessAction(MenuItemType* mi)
 	if ((mi->action) == NULL) return;
 	switch (mi->action)
 	{
-		case ACT_MENU:
+		case ACT_NEXT:
 			if ((mi->child) != NULL)
 			{
 				SetMenu((MenuType*)(mi->child));
-				ShowMenu();
+				ShowMenuBody();
 			}
 			break;
 		case ACT_BACK:
 			if ((mi->parent) != NULL)
 			{
-				SetMenu((MenuType*)(mi->parent));
-				ShowMenu();
+				MenuType* m = (MenuType *)(mi->parent);
+				SetMenu(m->parent);
+				ShowMenuBody();
 			}
 			break;
 		default: break;
